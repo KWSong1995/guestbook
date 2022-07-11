@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: skw0702/my_web:1.0
+        ports:
+        - containerPort: 8080
+      imagePullSecrets:
+      - name: docker-token
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: nginx
+  name: nginx-svc
+  namespace: default
+spec:
+  ports:
+  - nodePort: 30800
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: nginx
+  type: NodePort
